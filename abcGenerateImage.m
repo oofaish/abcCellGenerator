@@ -1,4 +1,4 @@
-function [ canvas, mask, nucleusMask ] = abcRandomCellGenerator( showImage, saveImage, imageName, params );
+function [ canvas, mask, nucleusMask ] = abcGenerateImage( showImage, saveImage, imageName, params );
     
     if nargin < 3
         error( 'Need a minimum of 3 arguments' );
