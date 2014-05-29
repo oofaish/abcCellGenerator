@@ -18,23 +18,18 @@ function [ p ] = abcParams( params )
     p.sdDivider = 5; %mean / sdDivider is the value used for standard Deviation when randomising
     
     %sizing
-    p.cellRadius = 40; %pixels;
     p.canvasSize = [ 512 512 ];%both height and width
     
-    p.nucleusRadius = 7;
-    p.nucleusOffset = 0;
-    p.cellShape = 'circle';
-    p.majorVsMinor = 1;%for drawing ellipses
-    
-    %transparency
-    p.cellAlpha = 0.25;
+    p.randomiseMajorVsMinor = true;
     p.randomiseAlpha = false;
-    p.nucleusAlpha = 1;
-    
+    p.randomiseNucleusRadius = false;
     p.overlapMethod = 'multiplicative';%additive
     
     %not currently implemented
     %p.maxOverlap = 10;%pixels
+
+    %now get single cell parameters.
+    p = abcStructureUnion( p, abcCellParams() );
     
     %if any defaults passed in, use them.
     if nargin > 0

@@ -1,4 +1,4 @@
-function [ canvas, mask, nucleusMask ] = abcGenerateImage( showImage, saveImage, imageName, params );
+function [ canvas, nucleusInfos, cellInfos ] = abcGenerateImage( showImage, saveImage, imageName, params )
     
     if nargin < 3
         error( 'Need a minimum of 3 arguments' );
@@ -24,23 +24,41 @@ function [ canvas, mask, nucleusMask ] = abcGenerateImage( showImage, saveImage,
 
     mask        = abcEmptyCanvas( params.canvasSize, false );
     nucleusMask = abcEmptyCanvas( params.canvasSize, false );
-    allWhite    = abcEmptyCanvas( params.canvasSize, true );
-
+    %allWhite    = abcEmptyCanvas( params.canvasSize, true );
+    
+    
     cellCount = abcNextPick( 'normal', params.totalNumberOfCells, params.totalNumberOfCells    / params.sdDivider );
-
+    
+    nucleusInfos = cell( cellCount, 1 );
+    cellInfos    = cell( cellCount, 1 );
+    thisNucleusInfo = struct();
+    thisCellInfo    = struct();
+    thisCentroid    = struct();
+    
     for i = 1:cellCount
-        cell = abcNextCell( params );    
-        [ cellCanvas, thisCellMask, cellIndex, thisNucleusCanvas, nucleusMask, nucleusIndex ] = abcDrawCell( cell, params.canvasSize );
-
-        mask( cellIndex ) = 1;
-        nucleusMask( nucleusIndex ) = 1;
+        cellParams = abcNextCell( params );    
+        thisCentroid.x = cellParams.nucleusX;
+        thisCentroid.y = cellParams.nucleusY;
+        
+        thisNucleusInfo.centroid = thisCentroid;
+        
+        [ thisCellCanvas, thisCellMask,thisNucleusCanvas, thisNucleusMask ] = abcDrawCell( cellParams, params.canvasSize );
+        
+        mask( thisCellMask == 1 ) = 1;
+        nucleusMask( thisNucleusMask == 1 ) = 1;
+        thisNucleusInfo.mask = nucleusMask;
+        thisCellInfo.pSpace = cellParams;
+        thisCellInfo.mask   = thisCellMask;
+        %thisCellInfo.index = cellIndex;
 
         %FIXME: there must be a better way of doing this - I am not sure what
         %imfuse is doing to be honest.
-        canvas = cellCanvas .* canvas;
-
-        %FIXME - they way you are doing nucleus Alpah is wrong.
-        canvas( nucleusIndex ) = ( 1- cell.nucleusAlpha );
+        canvas = thisCellCanvas .* canvas;
+        %canvas = thisNucleusCanvas .* canvas;
+        %canvas( thisNucleusMask == 1 ) = ( 1- cellParams.nucleusAlpha );
+        
+        nucleusInfos{ i } = thisNucleusInfo;
+        cellInfos{    i } = thisCellInfo;
     end
 
     if params.blurFinalImage

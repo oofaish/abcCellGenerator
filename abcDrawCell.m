@@ -1,4 +1,4 @@
-function [ cellCanvas, cellMask, cellIndex, nucleusCanvas, nucleusMask, nucleusIndex ] = abcDrawCell( cell, canvasSize )
+function [ cellCanvas, cellMask, nucleusCanvas, nucleusMask ] = abcDrawCell( cell, canvasSize )
 %ABCDRAWCELL Summary of this function goes here
 %   Detailed explanation goes here
     
@@ -28,6 +28,7 @@ function [ cellCanvas, cellMask, cellIndex, nucleusCanvas, nucleusMask, nucleusI
     
     cellCanvas                     = abcEmptyCanvas( canvasSize, true );
     cellCanvas( cellIndex )        = ( 1 - cell.alpha );
+    cellCanvas( nucleusIndex )     = ( 1 - cell.nucleusAlpha );
     nucleusCanvas                  = abcEmptyCanvas( canvasSize, true );
     nucleusCanvas( nucleusIndex )  = 0;
 end
